@@ -1,0 +1,66 @@
+.app-body {
+  background: radial-gradient(
+    circle at top left,
+    #1f2937 0,
+    #020617 50%,
+    #020617 100%
+  );
+  min-height: 100vh;
+  color: #e5e7eb;
+}
+
+.app-navbar {
+  background: linear-gradient(90deg, #0f172a, #1d4ed8);
+}
+
+.app-main {
+  min-height: 70vh;
+}
+
+.app-footer {
+  color: #9ca3af;
+  border-top: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.glass-card {
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  backdrop-filter: blur(10px);
+  color: #e5e7eb;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border-radius: 1rem;
+  color: #e5e7eb;
+}
+
+.table {
+  color: #e5e7eb;
+}
+
+.table thead {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+.table tbody tr {
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.table-hover tbody tr:hover {
+  background: rgba(37, 99, 235, 0.4);
+}
+
+input,
+select,
+textarea {
+  background-color: rgba(15, 23, 42, 0.9) !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid rgba(148, 163, 184, 0.7) !important;
+  color: #e5e7eb !important;
+}
+
+.min-vh-70 {
+  min-height: 70vh;
+}

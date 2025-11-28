@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Nhân viên{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 fw-bold text-primary">👤 Dashboard – Nhân viên</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Phòng đang phụ trách</p>
+                <h3 class="fw-bold">{{ employee_rooms|default:"--" }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Khách check-in hôm nay</p>
+                <h3 class="fw-bold">{{ checkin_today|default:"--" }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Thông báo chưa đọc</p>
+                <h3 class="fw-bold">{{ unread_notifications|default:"0" }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

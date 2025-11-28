@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Quản lý{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 fw-bold text-primary">📊 Dashboard – Quản lý</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Phòng đang sử dụng</p>
+                <h3 class="fw-bold">{{ rooms_in_use|default:"--" }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Doanh thu hôm nay</p>
+                <h3 class="fw-bold text-success">{{ revenue_today|default:"0" }} ₫</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Khách đang ở</p>
+                <h3 class="fw-bold">{{ current_guests|default:"--" }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Nhân viên đang làm</p>
+                <h3 class="fw-bold">{{ staff_on_duty|default:"--" }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

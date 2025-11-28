@@ -1,0 +1,26 @@
+{% extends 'base.html' %} {% block content %} {% block title %}Tạo đặt
+phòng{%endblock %}
+<h3 class="fw-bold mb-3">📝 Tạo đặt phòng</h3>
+
+{% if messages %} {% for message in messages %}
+<div class="alert alert-{{ message.tags }} py-2 mb-2">{{ message }}</div>
+{% endfor %} {% endif %} {% if form.errors %}
+<div class="alert alert-danger py-2">
+  Vui lòng kiểm tra lại các trường bên dưới, có lỗi ở một số ô.
+</div>
+{% endif %}
+
+<div class="card glass-card shadow-sm">
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <button class="btn btn-primary mt-2">Lưu</button>
+      <a
+        href="{% url 'hotel:dashboard_manager' %}"
+        class="btn btn-secondary mt-2"
+        >Quay lại</a
+      >
+    </form>
+  </div>
+</div>
+{% endblock %}

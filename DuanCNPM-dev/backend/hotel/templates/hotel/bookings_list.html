@@ -1,0 +1,55 @@
+{% extends 'base.html' %} {% block title %}Danh sách đặt phòng{% endblock %}
+{%block content %}
+<h3 class="fw-bold mb-3">📋 Danh sách đặt phòng</h3>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="text-muted small">
+    {% if user.vaitro == 'QUANLY' %} Bạn đang xem tất cả lượt đặt phòng. {% else
+    %} Bạn đang xem các lượt đặt phòng do bạn phụ trách. {% endif %}
+  </div>
+  {% if user.vaitro == 'QUANLY' %}
+  <a href="{% url 'hotel:booking_create' %}" class="btn btn-primary btn-sm">
+    + Tạo đặt phòng
+  </a>
+  {% endif %}
+</div>
+
+<div class="card glass-card shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead>
+        <tr>
+          <th>Mã đặt</th>
+          <th>Mã khách</th>
+          <th>Mã phòng</th>
+          <th>Mã NV</th>
+          <th>Ngày nhận</th>
+          <th>Ngày trả</th>
+          <th>Tiền cọc</th>
+          <th>Tổng tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bookings %}
+        <tr>
+          <td>{{ b.madatphong }}</td>
+          <td>{{ b.makhachhang }}</td>
+          <td>{{ b.maphong }}</td>
+          <td>{{ b.manhanvien }}</td>
+          <td>{{ b.ngaynhan|date:"d/m/Y H:i" }}</td>
+          <td>{{ b.ngaytra|date:"d/m/Y H:i" }}</td>
+          <td>{{ b.tiendatcoc }}</td>
+          <td>{{ b.tongtien }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="text-center text-muted py-3">
+            Chưa có lượt đặt phòng nào.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

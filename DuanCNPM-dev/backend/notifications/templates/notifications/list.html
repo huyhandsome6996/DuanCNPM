@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Thông báo{% endblock %}
+
+{% block content %}
+<h3 class="fw-bold mb-3">🔔 Thông báo</h3>
+
+<div class="card glass-card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table mb-0 table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for tb in notifications %}
+                <tr>
+                    <td>
+                        <a href="{% url 'notifications:detail' tb.mathongbao %}">{{ tb.tieude }}</a>
+                    </td>
+                    <td>{{ tb.ngaygui }}</td>
+                    <td>
+                        {% if tb.da_doc %}
+                            <span class="badge bg-success">Đã đọc</span>
+                        {% else %}
+                            <span class="badge bg-danger">Chưa đọc</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="3" class="text-center text-muted py-3">Chưa có thông báo.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

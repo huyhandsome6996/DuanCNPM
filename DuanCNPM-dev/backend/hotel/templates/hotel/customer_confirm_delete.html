@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Xóa khách hàng{% endblock %}
+
+{% block content %}
+<h3 class="fw-bold mb-3">Xóa khách hàng</h3>
+<p>Bạn có chắc chắn muốn xóa khách hàng <strong>{{ customer.hoten }}</strong> (Mã: {{ customer.makhachhang }}) không?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button class="btn btn-danger">Xóa</button>
+  <a href="{% url 'hotel:customer_list' %}" class="btn btn-secondary">Hủy</a>
+</form>
+{% endblock %}

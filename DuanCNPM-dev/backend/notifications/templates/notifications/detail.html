@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Chi tiết thông báo{% endblock %}
+
+{% block content %}
+<a href="{% url 'notifications:list' %}" class="btn btn-link ps-0 mb-3">← Quay lại</a>
+
+<div class="card glass-card shadow-sm">
+    <div class="card-body">
+        <h4 class="fw-bold mb-2">{{ notification.tieude }}</h4>
+        <p class="text-muted small mb-3">Gửi lúc: {{ notification.ngaygui }}</p>
+        <p style="white-space: pre-line;">{{ notification.noidung }}</p>
+    </div>
+{% endblock %}

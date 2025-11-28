@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Thông tin cá nhân{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 fw-bold">👤 Thông tin cá nhân</h2>
+
+<div class="card glass-card shadow-sm">
+    <div class="card-body">
+        <p><strong>Họ tên:</strong> {{ nhanvien.hoten }}</p>
+        <p><strong>Số điện thoại:</strong> {{ nhanvien.sdt }}</p>
+        <p><strong>Email:</strong> {{ nhanvien.email }}</p>
+        <p><strong>Địa chỉ:</strong> {{ nhanvien.diachi }}</p>
+        <p><strong>Ngày vào làm:</strong> {{ nhanvien.ngayvaolam }}</p>
+        <p><strong>Ca làm:</strong> {{ nhanvien.calam }}</p>
+        <p><strong>Trạng thái:</strong> {{ nhanvien.trangthai }}</p>
+    </div>
+</div>
+{% endblock %}

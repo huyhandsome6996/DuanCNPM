@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Báo cáo khách & dịch vụ{% endblock %}
+
+{% block content %}
+<h3 class="fw-bold mb-3">👥 Báo cáo khách & dịch vụ</h3>
+
+<div class="card glass-card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="post" class="row g-3 align-items-end">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Từ ngày (ngày nhận)</label>
+                <input type="date" name="tu_ngay" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Đến ngày</label>
+                <input type="date" name="den_ngay" class="form-control" required>
+            </div>
+            <div class="col-md-4 d-grid">
+                <button class="btn btn-primary fw-semibold">Tra cứu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card glass-card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Ngày nhận</th>
+                        <th>Phòng</th>
+                        <th>Khách</th>
+                        <th>Loại khách</th>
+                        <th>Dịch vụ</th>
+                        <th>Số lượng</th>
+                        <th>Tiền dịch vụ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in data %}
+                    <tr>
+                        <td>{{ row.ngaynhan|default:row.NgayNhan }}</td>
+                        <td>{{ row.maphong }}</td>
+                        <td>{{ row.ten_khach }}</td>
+                        <td>{{ row.loaikhach }}</td>
+                        <td>{{ row.tendichvu|default:"Không dùng" }}</td>
+                        <td>{{ row.soluong|default:"-" }}</td>
+                        <td>{{ row.tien_dichvu|default:"0" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="7" class="text-center text-muted">Chưa có dữ liệu.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

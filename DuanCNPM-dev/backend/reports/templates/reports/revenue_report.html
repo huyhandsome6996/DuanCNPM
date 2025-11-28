@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Báo cáo doanh thu{% endblock %}
+
+{% block content %}
+<h3 class="fw-bold mb-3">💰 Báo cáo doanh thu</h3>
+
+<div class="card glass-card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="post" class="row g-3 align-items-end">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Từ ngày</label>
+                <input type="date" name="tu_ngay" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Đến ngày</label>
+                <input type="date" name="den_ngay" class="form-control" required>
+            </div>
+            <div class="col-md-4 d-grid">
+                <button class="btn btn-primary fw-semibold">Xem báo cáo</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card glass-card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Doanh thu phòng</th>
+                        <th>Doanh thu dịch vụ</th>
+                        <th>Tổng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in data %}
+                    <tr>
+                        <td>{{ row.Ngay }}</td>
+                        <td>{{ row.DoanhThuPhong }}</td>
+                        <td>{{ row.DoanhThuDichVu }}</td>
+                        <td class="fw-bold text-primary">{{ row.TongDoanhThu }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="text-center text-muted">Chưa có dữ liệu.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

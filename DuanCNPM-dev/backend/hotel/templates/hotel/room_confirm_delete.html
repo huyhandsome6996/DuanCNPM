@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Xóa phòng{% endblock %}
+
+{% block content %}
+<h3 class="fw-bold mb-3">Xóa phòng</h3>
+
+<p>Bạn có chắc chắn muốn xóa phòng <strong>Mã {{ room.maphong }}</strong> không?</p>
+
+<ul>
+  <li><strong>Loại phòng:</strong> {{ room.loaiphong }}</li>
+  <li><strong>Giá phòng:</strong> {{ room.giaphong }}</li>
+  <li><strong>Trạng thái:</strong> {{ room.trangthai }}</li>
+</ul>
+
+<form method="post">
+  {% csrf_token %}
+  <button class="btn btn-danger">Xóa</button>
+  <a href="{% url 'hotel:room_list' %}" class="btn btn-secondary">Hủy</a>
+</form>
+
+{% endblock %}

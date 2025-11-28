@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Khách hàng{% endblock %}
+
+{% block content %}
+<h3 class="fw-bold mb-3">👥 Danh sách khách hàng</h3>
+
+<a href="{% url 'hotel:customer_create' %}" class="btn btn-primary mb-3">+ Thêm khách hàng</a>
+
+<div class="card glass-card shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead>
+        <tr>
+          <th>Mã</th>
+          <th>Họ tên</th>
+          <th>CCCD</th>
+          <th>SĐT</th>
+          <th>Loại khách</th>
+          <th>Quốc tịch</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for c in customers %}
+        <tr>
+          <td>{{ c.makhachhang }}</td>
+          <td>{{ c.hoten }}</td>
+          <td>{{ c.cccd }}</td>
+          <td>{{ c.sdt }}</td>
+          <td>{{ c.loaikhach }}</td>
+          <td>{{ c.quoctich }}</td>
+          <td class="text-end">
+            <a href="{% url 'hotel:customer_update' c.makhachhang %}" class="btn btn-sm btn-outline-light">Sửa</a>
+            <a href="{% url 'hotel:customer_delete' c.makhachhang %}" class="btn btn-sm btn-outline-danger">Xóa</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-3">Chưa có khách hàng.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
