@@ -6,6 +6,7 @@ from .forms import DatPhongForm, CTDatPhongInlineForm, KhachHangForm, ChonDichVu
 from .services import check_booking_conflict, do_checkin, do_checkout
 from django.db import transaction, connection
 from django.http import HttpResponse
+from django.urls import reverse
 
 def index(request):
     return HttpResponse("Trang quản lý hoạt động!")
@@ -24,8 +25,32 @@ def danh_sach_phong(request):
     return render(request, 'danh_sach_phong.html', {'phongs': phongs})
 
 def chi_tiet_phong(request, pk):
-    p = get_object_or_404(Phong, pk=pk)
-    return render(request, 'chi_tiet_phong.html', {'phong': p})
+    """
+    Hiện trang chi tiết phòng + xử lý cập nhật trạng thái (POST).
+    pk: dùng p.pk (không phụ thuộc tên cột PK).
+    """
+    phong = get_object_or_404(Phong, pk=pk)
+
+    # Lấy choices của field trangthai để render select
+    trangthai_choices = Phong._meta.get_field('trangthai').choices
+
+    if request.method == 'POST':
+        new_tt = request.POST.get('trangthai')
+        if new_tt and new_tt in dict(trangthai_choices):
+            phong.trangthai = new_tt
+            phong.save()  # vì models managed=False nhưng vẫn cho phép update
+            messages.success(request, "Cập nhật trạng thái phòng thành công.")
+        else:
+            messages.error(request, "Giá trị trạng thái không hợp lệ.")
+        return redirect(reverse('quanly:chi_tiet_phong', args=[phong.pk]))
+
+    # GET: hiển thị chi tiết
+    # Bạn có thể truyền thêm dữ liệu (ví dụ lịch đặt phòng, dọn phòng...) nếu muốn
+    context = {
+        'phong': phong,
+        'trangthai_choices': trangthai_choices,
+    }
+    return render(request, 'chi_tiet_phong.html', context)
 
 def danh_sach_dich_vu(request):
     ds = DichVu.objects.filter(ngung=False)

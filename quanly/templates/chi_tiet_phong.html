@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Chi tiết phòng {{ phong.sophong }}{% endblock %}
+{% block page_title %}Chi tiết phòng {{ phong.sophong }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div style="height:6px; background:
+            {% if phong.trangthai == 'TRONG' %}#2e7d32
+            {% elif phong.trangthai == 'DANG_THUE' %}#c62828
+            {% else %}#6c757d
+            {% endif %};"></div>
+
+        <div class="card-body">
+          <h4>Phòng {{ phong.sophong }}</h4>
+          <p class="mb-1"><strong>Loại:</strong> {{ phong.loai.ten }}</p>
+          <p class="mb-1"><strong>Giá cơ bản:</strong> {{ phong.loai.giacoban|intcomma }} VND</p>
+          <p class="mb-1">
+            <strong>Trạng thái hiện tại:</strong>
+            <span class="badge
+              {% if phong.trangthai == 'TRONG' %} bg-success
+              {% elif phong.trangthai == 'DANG_THUE' %} bg-danger
+              {% else %} bg-secondary
+              {% endif %}">
+              {% for code, label in trangthai_choices %}
+  {% if code == phong.trangthai %}{{ label }}{% endif %}
+{% endfor %}
+
+            </span>
+          </p>
+
+          <hr>
+
+          <!-- Form cập nhật trạng thái -->
+          <form method="post" class="row g-2">
+            {% csrf_token %}
+            <div class="col-8">
+              <label for="trangthai" class="form-label">Chuyển trạng thái</label>
+              <select name="trangthai" id="trangthai" class="form-select">
+                {% for code,label in trangthai_choices %}
+                  <option value="{{ code }}" {% if code == phong.trangthai %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-4 d-flex align-items-end">
+              <button type="submit" class="btn btn-primary w-100">Lưu</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+      <!-- Link quay lại -->
+      <div class="mt-3">
+        <a href="{% url 'quanly:danh_sach_phong' %}" class="btn btn-outline-secondary">
+          ← Quay lại danh sách phòng
+        </a>
+      </div>
+    </div>
+
+    <!-- Cột phụ: thông tin nhanh / lịch sử (placeholder) -->
+    <div class="col-md-6">
+      <div class="card p-3">
+        <h5>Thông tin nhanh</h5>
+        <ul class="list-unstyled">
+          <li><strong>Ngừng kinh doanh:</strong> {% if phong.ngungkdd %}Có{% else %}Không{% endif %}</li>
+          <li><strong>ID (PK):</strong> {{ phong.pk }}</li>
+          <li><strong>Ngày tạo (nếu có):</strong> — </li>
+        </ul>
+        <hr>
+        <h6>Lịch sử đặt phòng (mẫu)</h6>
+        <div class="text-muted">(Bạn có thể tích hợp DatPhong & CT_DatPhong để hiển thị lịch đặt)</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

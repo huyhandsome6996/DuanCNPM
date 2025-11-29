@@ -1,0 +1,83 @@
+{% extends "base.html" %} {% block title %}Trang chủ - Spring View
+Garden{%endblock %} {% block page_title %} Trang chủ hệ thống quản lý khách sạn
+{% endblock %} {% block content %}
+
+<div class="container mt-4">
+  <h3 class="mb-4">🌿 Tổng quan hoạt động</h3>
+
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <div
+        class="card shadow-sm border-0"
+        style="border-left: 6px solid #2e7d32"
+      >
+        <div class="card-body">
+          <h5 class="card-title">Tổng số phòng</h5>
+          <h2 class="fw-bold">{{ stats.tong_phong }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div
+        class="card shadow-sm border-0"
+        style="border-left: 6px solid #0277bd"
+      >
+        <div class="card-body">
+          <h5 class="card-title">Phòng trống</h5>
+          <h2 class="fw-bold text-success">{{ stats.phong_trong }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div
+        class="card shadow-sm border-0"
+        style="border-left: 6px solid #c62828"
+      >
+        <div class="card-body">
+          <h5 class="card-title">Phòng đang thuê</h5>
+          <h2 class="fw-bold text-danger">{{ stats.phong_thue }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-4" />
+
+  <h4>🚪 Các chức năng nhanh</h4>
+
+  <div class="row mt-3">
+    <div class="col-md-3 mb-3">
+      <a
+        href="{% url 'quanly:danh_sach_phong' %}"
+        class="btn btn-primary w-100 py-3"
+      >
+        <i class="bi bi-door-open"></i> Danh sách phòng
+      </a>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <a href="{% url 'quanly:dat_phong' %}" class="btn btn-success w-100 py-3">
+        <i class="bi bi-journal-plus"></i> Tạo đặt phòng
+      </a>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <a
+        href="{% url 'quanly:danh_sach_dich_vu' %}"
+        class="btn btn-warning w-100 py-3"
+      >
+        <i class="bi bi-basket"></i> Dịch vụ
+      </a>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <a href="#" class="btn btn-secondary w-100 py-3 disabled">
+        <i class="bi bi-graph-up"></i> Báo cáo (đang phát triển)
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
