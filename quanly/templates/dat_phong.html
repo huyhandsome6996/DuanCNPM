@@ -1,0 +1,35 @@
+{% extends "base.html" %} 
+{% block title %}Đặt phòng{% endblock %} 
+{% block page_title %}Đặt phòng mới{% endblock %} 
+{% block content %}
+<div class="container mt-4">
+  <div class="card p-3">
+    <h5>Thông tin đặt phòng</h5>
+
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Tạo đặt phòng</button>
+        <a href="{% url 'quanly:danh_sach_phong' %}" class="btn btn-secondary"
+          >Quay lại</a
+        >
+      </div>
+      <!-- nơi hiển thị trường khach -->
+<div class="d-flex align-items-center">
+  {{ form.khach }}
+  <a href="{% url 'quanly:them_khachhang' %}" class="btn btn-outline-secondary ms-2">Thêm khách</a>
+</div>
+<div class="mb-3 d-flex align-items-center">
+  <div style="flex:1;">
+    {{ form.ctv.label_tag }}
+    {{ form.ctv }}
+  </div>
+  <div class="ms-2" style="align-self:flex-end;">
+    <a href="{% url 'quanly:them_congtacvien' %}" class="btn btn-outline-secondary">Thêm cộng tác viên</a>
+  </div>
+</div>
+    </form>
+  </div>
+</div>
+{% endblock %}

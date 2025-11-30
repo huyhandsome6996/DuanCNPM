@@ -1,6 +1,7 @@
 # quanly/models.py
 from django.db import models
 
+
 # TRẠNG THÁI
 TRANG_THAI_PHONG = [
     ('TRONG', 'Trống'),

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}Chi tiết đặt phòng{% endblock %}
+
+{% block page_title %}
+Chi tiết đặt phòng
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+  {% if messages %}
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags|default:'info' }} alert-dismissible fade show" role="alert">
+        {{ m }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Đặt phòng #{{ dp.id }}</strong>
+      <div>
+        <span class="me-2 text-muted">Trạng thái:</span>
+        {% if dp.trangthai == 'CHO' %}<span class="badge bg-secondary">Chờ</span>
+        {% elif dp.trangthai == 'XAC_NHAN' %}<span class="badge bg-info">Xác nhận</span>
+        {% elif dp.trangthai == 'DANG_O' %}<span class="badge bg-success">Đang ở</span>
+        {% elif dp.trangthai == 'HOAN_TAT' %}<span class="badge bg-primary">Hoàn tất</span>
+        {% elif dp.trangthai == 'HUY' %}<span class="badge bg-danger">Hủy</span>
+        {% else %}<span class="badge bg-light text-dark">{{ dp.trangthai }}</span>{% endif %}
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h6>Thông tin khách hàng</h6>
+          <p class="mb-1"><strong>Khách:</strong> {{ dp.khach.hoten }}</p>
+          {% if dp.khach.cccd %}<p class="mb-1"><strong>CCCD:</strong> {{ dp.khach.cccd }}</p>{% endif %}
+          {% if dp.khach.sodt %}<p class="mb-1"><strong>SDT:</strong> {{ dp.khach.sodt }}</p>{% endif %}
+          {% if dp.khach.email %}<p class="mb-1"><strong>Email:</strong> {{ dp.khach.email }}</p>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <h6>Thông tin đặt</h6>
+          <p class="mb-1"><strong>Nhân viên tạo:</strong> {{ dp.nhanvien.hoten }}</p>
+          <p class="mb-1"><strong>Loại khách:</strong> {{ dp.loaikhach }}</p>
+          <p class="mb-1"><strong>Ngày nhận:</strong> {{ dp.ngaynhan|date:"d/m/Y" }}</p>
+          <p class="mb-1"><strong>Ngày trả:</strong> {{ dp.ngaytra|date:"d/m/Y" }}</p>
+          {% if dp.ctv %}<p class="mb-1"><strong>Cộng tác viên:</strong> {{ dp.ctv.hoten }}</p>{% endif %}
+          {% if dp.ghichu %}<p class="mb-1"><strong>Ghi chú:</strong> {{ dp.ghichu }}</p>{% endif %}
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0">Các phòng trong đặt phòng</h6>
+        <div>
+          <a href="{% url 'quanly:them_chi_tiet_datphong' dp.id %}" class="btn btn-sm btn-outline-primary">
+            + Thêm phòng
+          </a>
+          {% if dp.trangthai != 'HUY' %}
+            <form method="post" action="{% url 'quanly:tao_hoa_don' dp.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-success">Tạo hoá đơn</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>STT</th>
+              <th>Phòng</th>
+              <th>Loại</th>
+              <th>Giá</th>
+              <th>Ghi chú</th>
+              <th style="width:120px">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ct in dp.chitiet.all %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ ct.phong.sophong }}</td>
+                <td>{{ ct.phong.loai.ten }}</td>
+                <td>{{ ct.giaphong|intcomma }} đ</td>
+                <td>{% if ct.giaphong and ct.giaphong != 0 %}—{% endif %}</td>
+                <td>
+                  <!-- Xóa chi tiết (nếu cần) -->
+                  <form method="post" action="{% url 'quanly:xoa_ct_datphong' ct.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Bạn có muốn xoá phòng {{ ct.phong.sophong }} khỏi đặt phòng này?');">
+                      Xoá
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="text-center text-muted">Chưa có phòng nào được thêm.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <hr />
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <a href="{% url 'quanly:danh_sach_datphong' %}" class="btn btn-secondary btn-sm">Quay lại danh sách</a>
+        </div>
+
+        <div>
+          {% if dp.trangthai != 'DANG_O' and dp.trangthai != 'HUY' %}
+            <form method="post" action="{% url 'quanly:checkin' dp.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button class="btn btn-primary btn-sm" onclick="return confirm('Xác nhận check-in?')">Check-in</button>
+            </form>
+          {% endif %}
+
+          {% if dp.trangthai == 'DANG_O' %}
+            <form method="post" action="{% url 'quanly:checkout' dp.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button class="btn btn-warning btn-sm" onclick="return confirm('Xác nhận check-out?')">Check-out</button>
+            </form>
+          {% endif %}
+
+          {% if dp.trangthai != 'HUY' %}
+            <form method="post" action="{% url 'quanly:huy_datphong' dp.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Bạn có muốn huỷ đặt phòng này?')">Huỷ</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Nếu cần JS bổ trợ cho trang chi tiết đặt phòng, thêm ở đây.
+</script>
+{% endblock %}

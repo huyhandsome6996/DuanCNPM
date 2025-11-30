@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Phong, LoaiPhong, DichVu, DatPhong, CT_DatPhong, HoaDon
-from .forms import DatPhongForm, CTDatPhongInlineForm, KhachHangForm, ChonDichVuForm
+from .models import Phong, LoaiPhong, DichVu, DatPhong, CT_DatPhong, HoaDon, KhachHang
+from .forms import DatPhongForm, CTDatPhongInlineForm, KhachHangForm, CongTacVienForm
 from .services import check_booking_conflict, do_checkin, do_checkout
 from django.db import transaction, connection
 from django.http import HttpResponse
@@ -52,23 +52,46 @@ def chi_tiet_phong(request, pk):
     }
     return render(request, 'chi_tiet_phong.html', context)
 
+
+def them_congtacvien(request):
+    """
+    Trang thêm cộng tác viên (simple page). Sau khi lưu sẽ redirect về dat_phong để người dùng chọn.
+    """
+    if request.method == 'POST':
+        form = CongTacVienForm(request.POST)
+        if form.is_valid():
+            ctv = form.save()
+            messages.success(request, f"Đã thêm cộng tác viên: {ctv.hoten}")
+            # quay về trang đặt phòng (nếu bạn muốn về trang danh sách CTV thì đổi url)
+            return redirect('quanly:dat_phong')
+    else:
+        form = CongTacVienForm()
+    return render(request, 'them_congtacvien.html', {'form': form})
+
+
 def danh_sach_dich_vu(request):
     ds = DichVu.objects.filter(ngung=False)
     return render(request, 'danh_sach_dich_vu.html', {'dichvus': ds})
 
 def dat_phong(request):
     """
-    Giao diện đặt phòng: tạo KhachHang (nếu cần), tạo DatPhong, sau đó thêm CT_DatPhong (chọn phòng)
-    Kiểm tra xung đột bằng check_booking_conflict
+    Tạo DatPhong (chọn khách có sẵn hoặc tạo KhachHang mới),
+    sau đó redirect sang them_chi_tiet_datphong để thêm phòng cụ thể.
     """
     if request.method == 'POST':
         form = DatPhongForm(request.POST)
         if form.is_valid():
-            dp = form.save(commit=False)
-            # chưa commit chi tiết phòng ở đây
-            dp.save()
-            messages.success(request, "Đặt phòng đã tạo, tiếp theo chọn phòng vào booking.")
-            return redirect('quanly:them_chi_tiet_datphong', dp.id)
+            try:
+                with transaction.atomic():
+                    dp = form.save(commit=False)
+                    dp.trangthai = 'CHO'  # mặc định chờ
+                    dp.save()
+                    messages.success(request, "Đặt phòng đã được tạo. Tiếp theo thêm phòng vào booking.")
+                    return redirect('quanly:them_chi_tiet_datphong', datphong_id=dp.id)
+            except Exception as e:
+                messages.error(request, f"Tạo đặt phòng thất bại: {e}")
+        else:
+            messages.error(request, "Dữ liệu không hợp lệ, kiểm tra lại.")
     else:
         form = DatPhongForm()
     return render(request, 'dat_phong.html', {'form': form})
@@ -76,22 +99,45 @@ def dat_phong(request):
 def them_chi_tiet_datphong(request, datphong_id):
     dp = get_object_or_404(DatPhong, pk=datphong_id)
     if request.method == 'POST':
-        form = CTDatPhongInlineForm(request.POST, initial={'ngaynhan': dp.ngaynhan, 'ngaytra': dp.ngaytra})
+        form = CTDatPhongInlineForm(request.POST)
         if form.is_valid():
             phong = form.cleaned_data['phong']
-            # check conflict
-            if check_booking_conflict(phong.id, dp.ngaynhan, dp.ngaytra):
-                messages.error(request, f"Phòng {phong.sophong} đã có đặt trùng.")
+            ngaynhan = dp.ngaynhan
+            ngaytra = dp.ngaytra
+            # kiểm tra xung đột
+            if check_booking_conflict(phong.id, ngaynhan, ngaytra):
+                messages.error(request, f"Phòng {phong.sophong} đã có đặt trùng trong khoảng này.")
             else:
-                ct = form.save(commit=False)
-                ct.datphong = dp
-                ct.save()
-                messages.success(request, "Thêm phòng vào booking thành công.")
-                return redirect('quanly:chi_tiet_datphong', dp.id)
+                try:
+                    with transaction.atomic():
+                        ct = form.save(commit=False)
+                        ct.datphong = dp
+                        ct.save()
+                        # cập nhật trạng thái phòng tạm: 'DANG_THUE'
+                        phong.trangthai = 'DANG_THUE'
+                        phong.save()
+                        messages.success(request, f"Đã thêm phòng {phong.sophong} vào booking.")
+                        return redirect('quanly:chi_tiet_datphong', pk=dp.id)
+                except Exception as e:
+                    messages.error(request, f"Lưu chi tiết thất bại: {e}")
+        else:
+            messages.error(request, "Dữ liệu chi tiết không hợp lệ.")
     else:
         form = CTDatPhongInlineForm()
     return render(request, 'them_chi_tiet_datphong.html', {'form': form, 'dp': dp})
 
+def them_khachhang(request):
+    if request.method == 'POST':
+        form = KhachHangForm(request.POST)
+        if form.is_valid():
+            kh = form.save()
+            # redirect về trang đặt phòng (hoặc danh sách phòng)
+            messages.success(request, "Đã thêm khách hàng.")
+            # nếu bạn muốn quay lại form đặt phòng:
+            return redirect('quanly:dat_phong')
+    else:
+        form = KhachHangForm()
+    return render(request, 'them_khachhang.html', {'form': form})
 def chi_tiet_datphong(request, pk):
     dp = get_object_or_404(DatPhong, pk=pk)
     return render(request, 'chi_tiet_datphong.html', {'dp': dp})

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Thêm cộng tác viên{% endblock %}
+{% block page_title %}Thêm cộng tác viên mới{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card p-3">
+    <h5>Thông tin cộng tác viên</h5>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="mb-3">
+        {{ form.hoten.label_tag }} {{ form.hoten }}
+        {{ form.hoten.errors }}
+      </div>
+      <div class="mb-3">
+        {{ form.sdt.label_tag }} {{ form.sdt }}
+        {{ form.sdt.errors }}
+      </div>
+      <div class="mb-3">
+        {{ form.zalo.label_tag }} {{ form.zalo }}
+        {{ form.zalo.errors }}
+      </div>
+      <div class="mb-3">
+        {{ form.ghichu.label_tag }} {{ form.ghichu }}
+        {{ form.ghichu.errors }}
+      </div>
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Lưu cộng tác viên</button>
+        <a href="{% url 'quanly:dat_phong' %}" class="btn btn-secondary">Quay lại đặt phòng</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

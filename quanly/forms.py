@@ -1,44 +1,64 @@
 from django import forms
-from .models import DatPhong, KhachHang, CT_DatPhong, DichVu
-from .services import check_booking_conflict
-
+from .models import DatPhong, CT_DatPhong, KhachHang, Phong, CongTacVien
+LOAI_KHACH_CHOICES = [
+    ('VANGLAI', 'Vãng lai'),
+    ('TOUR_DOAN', 'Khách tour đoàn'),
+    ('BOOKING', 'Booking'),
+    ('AGODA', 'Agoda'),
+    ('TRAVELOKA', 'Traveloka'),
+]
 class KhachHangForm(forms.ModelForm):
     class Meta:
         model = KhachHang
-        fields = ['hoten','cccd','sodt','email','diachi']
-
+        fields = ['hoten', 'cccd', 'sodt', 'email', 'diachi']
+        widgets = {
+            'hoten': forms.TextInput(attrs={'class':'form-control'}),
+            'cccd': forms.TextInput(attrs={'class':'form-control'}),
+            'sodt': forms.TextInput(attrs={'class':'form-control'}),
+            'email': forms.EmailInput(attrs={'class':'form-control'}),
+            'diachi': forms.TextInput(attrs={'class':'form-control'}),
+        }
+class CongTacVienForm(forms.ModelForm):
+    class Meta:
+        model = CongTacVien
+        fields = ['hoten', 'sdt', 'zalo', 'ghichu']
+        widgets = {
+            'hoten': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Họ tên cộng tác viên'}),
+            'sdt': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Số điện thoại'}),
+            'zalo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Zalo (nếu có)'}),
+            'ghichu': forms.Textarea(attrs={'class': 'form-control', 'rows':3, 'placeholder': 'Ghi chú (nếu có)'}),
+        }
+        labels = {
+            'hoten': 'Họ tên',
+            'sdt': 'SĐT',
+            'zalo': 'Zalo',
+            'ghichu': 'Ghi chú',
+        }
 class DatPhongForm(forms.ModelForm):
+    loaikhach = forms.ChoiceField(choices=LOAI_KHACH_CHOICES, required=True, label='Loại khách')
     class Meta:
         model = DatPhong
-        fields = ['khach','nhanvien','loaikhach','ngaynhan','ngaytra','ctv','ghichu']
-
-    def clean(self):
-        cleaned = super().clean()
-        ngaynhan = cleaned.get('ngaynhan')
-        ngaytra = cleaned.get('ngaytra')
-        if ngaynhan and ngaytra and ngaytra < ngaynhan:
-            raise forms.ValidationError("Ngày trả phải lớn hơn hoặc bằng ngày nhận.")
-        # Không kiểm tra phòng ở đây (phòng ở CT_DatPhong)
-        return cleaned
+        fields = ['khach', 'nhanvien', 'loaikhach', 'ngaynhan', 'ngaytra', 'ctv', 'ghichu']
+        widgets = {
+            'khach': forms.Select(attrs={'class':'form-select'}),
+            'nhanvien': forms.Select(attrs={'class':'form-select'}),
+            'loaikhach': forms.Select(attrs={'class':'form-select'}),
+            'ngaynhan': forms.DateInput(attrs={'type':'date','class':'form-control'}),
+            'ngaytra': forms.DateInput(attrs={'type':'date','class':'form-control'}),
+            'ctv': forms.Select(attrs={'class':'form-select'}),
+            'ghichu': forms.Textarea(attrs={'class':'form-control','rows':2}),
+        }
 
 class CTDatPhongInlineForm(forms.ModelForm):
     class Meta:
         model = CT_DatPhong
-        fields = ['phong','giaphong']
+        fields = ['phong', 'giaphong']
+        widgets = {
+            'phong': forms.Select(attrs={'class':'form-select'}),
+            'giaphong': forms.NumberInput(attrs={'class':'form-control'}),
+        }
 
-    def clean(self):
-        cleaned = super().clean()
-        phong = cleaned.get('phong')
-        datphong = self.instance.datphong if self.instance.pk else None
-        ngaynhan = self.initial.get('ngaynhan') or self.data.get('ngaynhan')
-        ngaytra = self.initial.get('ngaytra') or self.data.get('ngaytra')
-        # Use service check to validate conflict
-        if phong and self.initial.get('ngaynhan') and self.initial.get('ngaytra'):
-            conflict = check_booking_conflict(phong.id, self.initial['ngaynhan'], self.initial['ngaytra'])
-            if conflict:
-                raise forms.ValidationError("Phòng đã bị đặt trùng trong khoảng thời gian này.")
-        return cleaned
-
-class ChonDichVuForm(forms.Form):
-    dichvu = forms.ModelChoiceField(queryset=DichVu.objects.filter(ngung=False))
-    soluong = forms.IntegerField(min_value=1, initial=1)
+    def __init__(self, *args, **kwargs):
+        # Nếu cần giới hạn phòng chỉ những phòng TRONG (mặc định)
+        super().__init__(*args, **kwargs)
+        self.fields['phong'].queryset = Phong.objects.filter(trangthai='TRONG').order_by('sophong')

@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% block title %}Thêm phòng vào đặt phòng{% endblock
+%} {% block page_title %}Thêm phòng cho Đặt phòng #{{ dp.id }}{% endblock %}
+{%block content %}
+<div class="container mt-4">
+  <div class="card p-3">
+    <h5>Đặt phòng: #{{ dp.id }}</h5>
+    <p>
+      Khách: {{ dp.khach.hoten }} | Ngày nhận: {{ dp.ngaynhan }} → Ngày trả: {{
+      dp.ngaytra }}
+    </p>
+
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <button class="btn btn-primary">Thêm phòng</button>
+      <a
+        href="{% url 'quanly:chi_tiet_datphong' pk=dp.id %}"
+        class="btn btn-outline-secondary"
+        >Xem đặt phòng</a
+      >
+    </form>
+
+    <hr />
+    <h6>Danh sách phòng đã được thêm</h6>
+    <ul>
+      {% for ct in dp.chitiet.all %}
+      <li>Phòng {{ ct.phong.sophong }} — Giá: {{ ct.giaphong }} VND</li>
+      {% empty %}
+      <li>Chưa có phòng nào.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
